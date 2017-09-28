@@ -67,28 +67,35 @@ end
 
 
 
+
+
+
 -- summary function like tf.
+function TensorBoard:refresh_all(name)
+    return self.client:remove_all_experiments()
+end
+
 function TensorBoard:create_exp(name)
     assert(type(name)=='string')
-
-    --self.client:remove_all_experiments()            --refresh.
-    self.exp = self.client:open_experiment(name)
+    exp_list = self.client:get_experiment_names()
+    if exp_list[name] ~= nil then self.exp = self.client:open_experiment(name)
+    else self.exp = self.client:create_experiment(name) end
 end
 function TensorBoard:remove_exp(name)
     assert(type(name)=='string')
     return self.client:remove_experiment(name)
 end
 function TensorBoard:summary_scalar(name, value, step)
-    --assert(self.exp~=nil, 'create experiment first. (use "create_exp() func.")')
+    assert(self.exp~=nil, 'create experiment first. (use "create_exp() func.")')
     if self.record[name] == nil then self.record[name]={data={}, step={}, type='scalar'} end
     table.insert(self.record[name].data, value)
     table.insert(self.record[name].step, step)
 end
 function TensorBoard:summary_histogram()
-    print('tt')
-end
-function TensorBoard:summary_merge_all()
-    print('d')
+    assert(self.exp~=nil, 'create experiment first. (use "create_exp() func.")')
+    if self.record[name] == nil then self.record[name]={data={}, step={}, type='histogram'} end
+    table.insert(self.record[name].data, value)
+    table.insert(self.record[name].step, step)
 end
 function TensorBoard:summary_FileWriter()
     print('ss')
